@@ -1,3 +1,5 @@
+from queue import PriorityQueue
+
 HORIZONTAL = 0
 VERTICAL = 1
 
@@ -29,22 +31,43 @@ labyrinth4 = [[".",".",".",".",".",".",".",".",".","."],
             [".",".",".",".",".",".",".",".",".","."]]
 
 def solve_maze(maze):
-    rows = len(maze)
-    cols = len(maze[0])
-    start_direction = HORIZONTAL
-
+    
     def is_valid(x, y):
         return 0 <= x < rows and 0 <= y < cols and maze[x][y] == "."
     
-    def dfs(x, y, direction, steps):
-        return 0 # ToDo
+    def rotate_direction(direction):
+        return HORIZONTAL if direction == VERTICAL else VERTICAL
+
+    def heuristic(node, goal):
+        return abs(node[0] - goal[0]) + abs(node[1] - goal[1])
     
-    result, steps = dfs(0, 1, start_direction, 0)
+    rows = len(maze)
+    cols = len(maze[0])
+    direction = HORIZONTAL
+
+    start = (0, 1, direction)
+    goal = (rows-2, cols-1, VERTICAL)
+
     
-    if result:
-        return maze, steps
-    else:
-        return None
+    closed_set = set()
+    steps = 0
+    g_score = {(pos): float('inf') for row in maze for pos in row}
+    g_score[(start)] = 0
+    f_score = {(pos): float('inf') for row in maze for pos in row}
+    f_score[(start)] = heuristic(start, goal)
+
+    open_list = PriorityQueue()
+    open_list.put((heuristic(start,goal)),(heuristic(start,goal)),start)
+
+    while open_list:
+        
+        currCell=open_list.get()[2]
+        if currCell == goal:
+            break
+        for d in 'ESNW':
+            
+
+    return None
 
 maze=labyrinth
 
@@ -53,3 +76,6 @@ if solucion:
     print(num_pasos)
 else:
     print("-1")
+
+
+import heapq
