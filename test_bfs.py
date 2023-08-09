@@ -3,6 +3,15 @@ import main_bfs
 
 class TestBFS(unittest.TestCase):
 
+    def test_correct_maze_size(self):
+        labyrinth = [[".",".",".",".",".",".",".",".","."],
+            ["#",".",".",".","#",".",".",".","."],]
+        
+        with self.assertRaises(main_bfs.NotPermitedSizeError):
+            main_bfs.solve_maze(labyrinth)
+
+        
+
     def test_labyrinth1(self):
     
         labyrinth = [[".",".",".",".",".",".",".",".","."],
@@ -13,7 +22,7 @@ class TestBFS(unittest.TestCase):
     
         steps = main_bfs.solve_maze(labyrinth)
 
-        self.assertEquals(steps, 11)
+        self.assertEqual(steps, 11)
 
     def test_labyrinth2(self):
     
@@ -25,7 +34,7 @@ class TestBFS(unittest.TestCase):
         
         steps = main_bfs.solve_maze(labyrinth)
 
-        self.assertEquals(steps, -1)
+        self.assertEqual(steps, -1)
 
     def test_labyrinth3(self):
     
@@ -35,7 +44,7 @@ class TestBFS(unittest.TestCase):
         
         steps = main_bfs.solve_maze(labyrinth)
 
-        self.assertEquals(steps, 2)
+        self.assertEqual(steps, 2)
 
     def test_labyrinth4(self):
     
@@ -52,7 +61,7 @@ class TestBFS(unittest.TestCase):
         
         steps = main_bfs.solve_maze(labyrinth)
 
-        self.assertEquals(steps, 16)
+        self.assertEqual(steps, 16)
 
 if __name__ == '__main__':
     unittest.main()

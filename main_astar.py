@@ -31,6 +31,10 @@ labyrinth4 = [[".",".",".",".",".",".",".",".",".","."],
             [".",".",".",".",".",".",".",".",".","."]]
 
 def solve_maze(maze):
+
+    def is_size_correct(rows, cols):
+        if not (3<= rows <=1000 and 3<= cols <= 1000):
+            raise Exception("Values of the maze not accepted")
     
     def is_valid(x, y):
         return 0 <= x < rows and 0 <= y < cols and maze[x][y] == "."
@@ -43,6 +47,9 @@ def solve_maze(maze):
     
     rows = len(maze)
     cols = len(maze[0])
+
+    is_size_correct(rows,cols)
+
     direction = HORIZONTAL
 
     start = (0, 1, direction)
