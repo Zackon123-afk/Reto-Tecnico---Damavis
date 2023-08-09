@@ -90,21 +90,21 @@ def solve_maze(maze):
         
         # Now moving with the rod rotated
         for move in MOVE_LIST:
-            if move == EAST:
-                new_x, new_y = x, y + 1
-            elif move == SOUTH:
-                new_x, new_y = x + 1, y
-            elif move == NORTH:
-                new_x, new_y = x - 1, y
-            elif move == WEST:
-                new_x, new_y = x, y - 1
-            
-            if can_rotate(new_x,new_y):
+            if can_rotate(x,y):
+                if move == EAST:
+                    new_x, new_y = x, y + 1
+                elif move == SOUTH:
+                    new_x, new_y = x + 1, y
+                elif move == NORTH:
+                    new_x, new_y = x - 1, y
+                elif move == WEST:
+                    new_x, new_y = x, y - 1
+                                
                 new_direction = rotate(direction)
                 result, new_steps = dfs(new_x, new_y, new_direction, steps + 2)
                 if result:
                     return result, new_steps
-        
+            
         maze[x][y] = '.'  # Backtrack if the path doesn't lead to the destination
         return False, steps
     
