@@ -32,20 +32,22 @@ labyrinth4 = [[".",".",".",".",".",".",".",".",".","."],
 def solve_maze(maze):
     rows = len(maze)
     cols = len(maze[0])
-    start_direction = HORIZONTAL
+    direction = HORIZONTAL
 
     def is_valid(x, y):
         return 0 <= x < rows and 0 <= y < cols and maze[x][y] == "."
     
-    def dfs(x, y, direction, steps):
-        return 0 # ToDo
+    def heuristic(x, y):
+        return abs(x - (rows - 1)) + abs(y - (cols - 1))
+         
+    start = (0, 1, direction)
+    open_list = [(heuristic(0, 1), 0, start)]  # (f, g, state)
+    closed_set = set()
     
-    result, steps = dfs(0, 1, start_direction, 0)
-    
-    if result:
-        return maze, steps
-    else:
-        return None
+    while open_list:
+       break #ToDo
+
+    return None
 
 maze=labyrinth
 
@@ -54,3 +56,6 @@ if solucion:
     print(num_pasos)
 else:
     print("-1")
+
+
+import heapq
