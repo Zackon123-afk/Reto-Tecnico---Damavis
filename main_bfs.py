@@ -6,6 +6,9 @@ WEST = 'W'
 SOUTH = 'S'
 MOVE_LIST = [EAST,NORTH,WEST,SOUTH]
 
+MAX_SIZE = 1000
+MIN_SIZE = 3
+
 labyrinth = [[".",".",".",".",".",".",".",".","."],
             ["#",".",".",".","#",".",".",".","."],
             [".",".",".",".","#",".",".",".","."],
@@ -40,7 +43,7 @@ class NotPermitedSizeError(Exception):
 def solve_maze(maze):
 
     def is_size_correct(rows, cols):
-        if not (3<= rows <=1000 and 3<= cols <= 1000):
+        if not (MIN_SIZE <= rows <= MAX_SIZE and MIN_SIZE <= cols <= MAX_SIZE):
             raise NotPermitedSizeError("Values of the labyrinth not accepted")
     
     def is_valid(x, y, direction):
