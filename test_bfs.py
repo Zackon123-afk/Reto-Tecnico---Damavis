@@ -10,7 +10,19 @@ class TestBFS(unittest.TestCase):
         with self.assertRaises(main_bfs.NotPermitedSizeError):
             main_bfs.solve_maze(labyrinth)
 
+    def test_correct_maze_size_2(self):
+        line = [".",".",".",".",".",".",".",".","."]
+
+        labyrinth = []
+
+        i = 0
+
+        while i < 1500:
+            labyrinth.append(line)
+            i = i + 1
         
+        with self.assertRaises(main_bfs.NotPermitedSizeError):
+            main_bfs.solve_maze(labyrinth)
 
     def test_labyrinth1(self):
     
