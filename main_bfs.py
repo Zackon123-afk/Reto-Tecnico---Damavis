@@ -7,36 +7,11 @@ SOUTH = 'S'
 MOVE_LIST = [EAST,NORTH,WEST,SOUTH]
 
 WALL = '#'
+VISITED = 'X'
+PATH = '.'
 
 MAX_SIZE = 1000
 MIN_SIZE = 3
-
-labyrinth = [[".",".",".",".",".",".",".",".","."],
-            ["#",".",".",".","#",".",".",".","."],
-            [".",".",".",".","#",".",".",".","."],
-            [".","#",".",".",".",".",".","#","."],
-            [".","#",".",".",".",".",".","#","."]]
-
-labyrinth2 = [[".",".",".",".",".",".",".",".","."],
-            ["#",".",".",".","#",".",".","#","."],
-            [".",".",".",".","#",".",".",".","."],
-            [".","#",".",".",".",".",".","#","."],
-            [".","#",".",".",".",".",".","#","."]]
-
-labyrinth3 = [[".",".","."],
-            [".",".","."],
-            [".",".","."]]
-
-labyrinth4 = [[".",".",".",".",".",".",".",".",".","."],
-            [".","#",".",".",".",".","#",".",".","."],
-            [".","#",".",".",".",".",".",".",".","."],
-            [".",".",".",".",".",".",".",".",".","."],
-            [".",".",".",".",".",".",".",".",".","."],
-            [".","#",".",".",".",".",".",".",".","."],
-            [".","#",".",".",".","#",".",".",".","."],
-            [".",".",".",".",".",".","#",".",".","."],
-            [".",".",".",".",".",".",".",".",".","."],
-            [".",".",".",".",".",".",".",".",".","."]]
 
 class NotPermitedSizeError(Exception):
     """Value of the labyrinth not accepted"""
@@ -49,7 +24,7 @@ def solve_maze(maze):
             raise NotPermitedSizeError("Values of the labyrinth not accepted")
     
     def is_valid(x, y, direction):
-        if 0 <= x < rows and 0 <= y < cols and maze[x][y] == ".":
+        if 0 <= x < rows and 0 <= y < cols and maze[x][y] == PATH:
             if direction == HORIZONTAL:
                 return (
                     0 <= y + 1 < cols
@@ -73,11 +48,22 @@ def solve_maze(maze):
     def rotate(direction):
         return HORIZONTAL if direction == VERTICAL else VERTICAL
 
-    def can_rotate(x,y):
-        return (1 <= x < rows-1 and 1 <= y < cols-1 and maze[x][y] != WALL and maze[x+1][y] != WALL and maze[x-1][y] != WALL and maze[x][y+1] != WALL 
-                and maze[x][y-1] != WALL and maze[x+1][y+1] != WALL and maze[x-1][y-1] != WALL and maze[x+1][y-1] != WALL and maze[x-1][y+1] != WALL)
+    def can_rotate(x, y):
+        return (
+            1 <= x < rows - 1
+            and 1 <= y < cols - 1
+            and maze[x][y] != WALL
+            and maze[x + 1][y] != WALL
+            and maze[x - 1][y] != WALL
+            and maze[x][y + 1] != WALL
+            and maze[x][y - 1] != WALL
+            and maze[x + 1][y + 1] != WALL
+            and maze[x - 1][y - 1] != WALL
+            and maze[x + 1][y - 1] != WALL
+            and maze[x - 1][y + 1] != WALL
+        )
     
-    def dfs(x, y, direction, steps):
+    def bfs(x, y, direction, steps):
 
         if not is_valid(x, y, direction):
             return False, steps
@@ -85,7 +71,7 @@ def solve_maze(maze):
         if is_goal(x,y,direction):
             return True, steps
 
-        maze[x][y] = 'X'  # Mark the cell as visited
+        maze[x][y] = VISITED
         
         # Try moving
         for move in MOVE_LIST:
@@ -98,7 +84,7 @@ def solve_maze(maze):
             elif move == WEST:
                 new_x, new_y = x, y - 1
 
-            result, new_steps = dfs(new_x, new_y, direction, steps + 1)
+            result, new_steps = bfs(new_x, new_y, direction, steps + 1)
             if result:
                 return result, new_steps
         
@@ -115,11 +101,11 @@ def solve_maze(maze):
                     new_x, new_y = x, y - 1
                                 
                 new_direction = rotate(direction)
-                result, new_steps = dfs(new_x, new_y, new_direction, steps + 2)
+                result, new_steps = bfs(new_x, new_y, new_direction, steps + 2)
                 if result:
                     return result, new_steps
             
-        maze[x][y] = '.'  # Backtrack if the path doesn't lead to the destination
+        maze[x][y] = PATH  # Backtrack if the path doesn't lead to the destination
         return False, steps
     
     rows = len(maze)
@@ -129,16 +115,6 @@ def solve_maze(maze):
 
     start_direction = HORIZONTAL
 
-    _, steps = dfs(0, 1, start_direction, 0)
+    _, steps = bfs(0, 1, start_direction, 0)
 
     return steps if steps != 0 else -1
-
-def main():
-    maze=labyrinth
-
-    num_pasos = solve_maze(maze)
-    
-    print(num_pasos)
-
-if __name__ == "__main__":
-    main()

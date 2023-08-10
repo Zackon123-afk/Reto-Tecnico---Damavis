@@ -13,36 +13,10 @@ SOUTH_ROTATED = 'SR'
 MOVE_LIST = [EAST,NORTH,WEST,SOUTH,EAST_ROTATED,NORTH_ROTATED,WEST_ROTATED,SOUTH_ROTATED]
 
 WALL='#'
+PATH = '.'
 
 MAX_SIZE = 1000
 MIN_SIZE = 3
-
-labyrinth = [[".",".",".",".",".",".",".",".","."],
-            ["#",".",".",".","#",".",".",".","."],
-            [".",".",".",".","#",".",".",".","."],
-            [".","#",".",".",".",".",".","#","."],
-            [".","#",".",".",".",".",".","#","."]]
-
-labyrinth2 = [[".",".",".",".",".",".",".",".","."],
-            ["#",".",".",".","#",".",".","#","."],
-            [".",".",".",".","#",".",".",".","."],
-            [".","#",".",".",".",".",".","#","."],
-            [".","#",".",".",".",".",".","#","."]]
-
-labyrinth3 = [[".",".","."],
-            [".",".","."],
-            [".",".","."]]
-
-labyrinth4 = [[".",".",".",".",".",".",".",".",".","."],
-            [".","#",".",".",".",".","#",".",".","."],
-            [".","#",".",".",".",".",".",".",".","."],
-            [".",".",".",".",".",".",".",".",".","."],
-            [".",".",".",".",".",".",".",".",".","."],
-            [".","#",".",".",".",".",".",".",".","."],
-            [".","#",".",".",".","#",".",".",".","."],
-            [".",".",".",".",".",".","#",".",".","."],
-            [".",".",".",".",".",".",".",".",".","."],
-            [".",".",".",".",".",".",".",".",".","."]]
 
 class NotPermitedSizeError(Exception):
     """Value of the labyrinth not accepted"""
@@ -62,8 +36,8 @@ def solve_maze(maze):
             y = 0
 
             while y < cols:
-                cell = (x,y,HORIZONTAL)
-                cell2 = (x,y,VERTICAL)
+                cell = (x, y, HORIZONTAL)
+                cell2 = (x, y, VERTICAL)
                 temp_dict[cell] = float('inf')
                 temp_dict[cell2] = float('inf')
                 y = y + 1
@@ -74,20 +48,20 @@ def solve_maze(maze):
 
     
     def can_move(x, y, direction):
-        if 0 <= x < rows and 0 <= y < cols and maze[x][y] == ".":
+        if 0 <= x < rows and 0 <= y < cols and maze[x][y] == PATH:
             if direction == HORIZONTAL:
                 return (
-                    0 <= y+1 < cols 
+                    0 <= y+1 < cols             # Compensate for borders
                     and 0 <= y-1 < cols 
-                    and maze[x][y+1] != WALL
-                    and maze[x][y-1] != WALL
+                    and maze[x][y + 1] != WALL
+                    and maze[x][y - 1] != WALL
                     )
             else:
                 return (
-                    0 <= x+1 < rows 
+                    0 <= x+1 < rows             # Compensate for borders
                     and 0 <= x-1 < rows 
-                    and maze[x+1][y] != WALL
-                    and maze[x-1][y] != WALL
+                    and maze[x + 1][y] != WALL
+                    and maze[x - 1][y] != WALL
                     )
             
     def can_rotate(x, y):
@@ -128,8 +102,20 @@ def solve_maze(maze):
         h_goal1 = abs(node[0] - goal1[0]) + abs(node[1] - goal1[1])
         h_goal2 = abs(node[0] - goal2[0]) + abs(node[1] - goal2[1])
 
-        # Return the smaller heuristic value
         return min(h_goal1, h_goal2)
+
+    def calc_steps(goal,start,a_path):
+        steps = 0
+        while goal!=start and goal!= None:
+
+            value_a_path = a_path[goal]
+            if value_a_path[1] == False:
+                steps = steps + 1
+            else:
+                steps = steps + 2
+
+            goal = value_a_path[0]
+        return steps
 
     rows = len(maze)
     cols = len(maze[0])
@@ -162,31 +148,33 @@ def solve_maze(maze):
         for move in MOVE_LIST: # Moving, and when is rotated, first we check if it can rotate
             has_rotated = False
             if move == EAST:
-                child_cell = (curr_cell[0],curr_cell[1]+1,curr_cell[2])
+                child_cell = (curr_cell[0],curr_cell[1]+ 1,curr_cell[2])
             elif move == SOUTH:
-                child_cell = (curr_cell[0]+1,curr_cell[1],curr_cell[2])
+                child_cell = (curr_cell[0]+ 1,curr_cell[1],curr_cell[2])
             elif move == NORTH:
                 child_cell = (curr_cell[0]-1,curr_cell[1],curr_cell[2])
             elif move == WEST:
                 child_cell = (curr_cell[0],curr_cell[1]-1,curr_cell[2])
             elif can_rotate(curr_cell[0],curr_cell[1]):
                 if move == EAST_ROTATED:
-                        child_cell = (curr_cell[0],curr_cell[1]+1,new_rotation)
+                        child_cell = (curr_cell[0],curr_cell[1] + 1,new_rotation)
                 elif move == SOUTH_ROTATED:
-                        child_cell = (curr_cell[0]+1,curr_cell[1],new_rotation)
+                        child_cell = (curr_cell[0] + 1,curr_cell[1],new_rotation)
                 elif move == NORTH_ROTATED:
-                        child_cell = (curr_cell[0]-1,curr_cell[1],new_rotation)
+                        child_cell = (curr_cell[0] - 1,curr_cell[1],new_rotation)
                 elif move == WEST_ROTATED:
-                        child_cell = (curr_cell[0],curr_cell[1]-1,new_rotation)
+                        child_cell = (curr_cell[0],curr_cell[1] - 1,new_rotation)
                 has_rotated = True
-
             else:
                 continue
                       
             if can_move(child_cell[0],child_cell[1],child_cell[2]):
-                temp_g_score = g_score[curr_cell]+1
+                
                 if has_rotated == True:
-                    temp_g_score = temp_g_score + 1
+                    temp_g_score = g_score[curr_cell] + 2
+                else:
+                    temp_g_score = g_score[curr_cell] + 1
+
                 temp_f_score = temp_g_score+heuristic(child_cell,goal1,goal2)
 
                 if temp_f_score < f_score[child_cell]:
@@ -202,42 +190,15 @@ def solve_maze(maze):
     # Check if goal2 is in a_path
     cell_goal2 = goal2 if goal2 in a_path else None
     
+    # Check if there is no path
     if cell_goal1 == None and cell_goal2 == None:
         return -1
 
-    steps_1 = 0
-    while cell_goal1!=start and cell_goal1!= None:
-
-        value_a_path = a_path[cell_goal1]
-        if value_a_path[1] == False:
-            steps_1 = steps_1 + 1
-        else:
-            steps_1 = steps_1 + 2
-
-        cell_goal1 = value_a_path[0]
-    
-    steps_2 = 0
-    while cell_goal2!=start and cell_goal2!= None:
-
-        value_a_path = a_path[cell_goal2]
-        if value_a_path[1] == False:
-            steps_2 = steps_2 + 1
-        else:
-            steps_2 = steps_2 + 2
-
-        cell_goal2 = value_a_path[0]
+    #Calculate steps
+    steps_1 = calc_steps(cell_goal1,start,a_path)
+    steps_2 = calc_steps(cell_goal2,start,a_path)
     
     if (steps_1 < steps_2) or steps_2==0:
         return steps_1
     else:
         return steps_2
-
-def main():
-    maze=labyrinth4
-
-    steps = solve_maze(maze)
-    print(steps)
-
-
-if __name__ == "__main__":
-    main()
