@@ -6,6 +6,8 @@ WEST = 'W'
 SOUTH = 'S'
 MOVE_LIST = [EAST,NORTH,WEST,SOUTH]
 
+WALL = '#'
+
 MAX_SIZE = 1000
 MIN_SIZE = 3
 
@@ -49,22 +51,31 @@ def solve_maze(maze):
     def is_valid(x, y, direction):
         if 0 <= x < rows and 0 <= y < cols and maze[x][y] == ".":
             if direction == HORIZONTAL:
-                return (0 <= y+1 < cols and 0 <= y-1 < cols and maze[x][y+1] != "#"
-                and maze[x][y-1] != "#")
+                return (
+                    0 <= y + 1 < cols
+                    and 0 <= y - 1 < cols
+                    and maze[x][y + 1] != WALL
+                    and maze[x][y - 1] != WALL
+                )
             else:
-                return (0 <= x+1 < rows and 0 <= x-1 < rows and maze[x+1][y] != "#"
-                and maze[x-1][y] != "#")
+                return (
+                    0 <= x + 1 < rows
+                    and 0 <= x - 1 < rows
+                    and maze[x + 1][y] != WALL
+                    and maze[x - 1][y] != WALL
+                )
     
     def is_goal(x, y, direction):
-        return ((x == rows - 2 and y == cols - 1 and direction == VERTICAL) or
-                (x == rows - 1 and y == cols - 2 and direction == HORIZONTAL))     
+        return (x == rows - 2 and y == cols - 1 and direction == VERTICAL) or (
+            x == rows - 1 and y == cols - 2 and direction == HORIZONTAL
+        )  
 
     def rotate(direction):
         return HORIZONTAL if direction == VERTICAL else VERTICAL
 
     def can_rotate(x,y):
-        return (1 <= x < rows-1 and 1 <= y < cols-1 and maze[x][y] != "#" and maze[x+1][y] != "#" and maze[x-1][y] != "#" and maze[x][y+1] != "#" 
-                and maze[x][y-1] != "#" and maze[x+1][y+1] != "#" and maze[x-1][y-1] != "#" and maze[x+1][y-1] != "#" and maze[x-1][y+1] != "#")
+        return (1 <= x < rows-1 and 1 <= y < cols-1 and maze[x][y] != WALL and maze[x+1][y] != WALL and maze[x-1][y] != WALL and maze[x][y+1] != WALL 
+                and maze[x][y-1] != WALL and maze[x+1][y+1] != WALL and maze[x-1][y-1] != WALL and maze[x+1][y-1] != WALL and maze[x-1][y+1] != WALL)
     
     def dfs(x, y, direction, steps):
 

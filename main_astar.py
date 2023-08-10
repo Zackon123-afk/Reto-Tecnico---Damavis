@@ -12,6 +12,8 @@ WEST_ROTATED = 'WR'
 SOUTH_ROTATED = 'SR'
 MOVE_LIST = [EAST,NORTH,WEST,SOUTH,EAST_ROTATED,NORTH_ROTATED,WEST_ROTATED,SOUTH_ROTATED]
 
+WALL='#'
+
 MAX_SIZE = 1000
 MIN_SIZE = 3
 
@@ -77,24 +79,31 @@ def solve_maze(maze):
                 return (
                     0 <= y+1 < cols 
                     and 0 <= y-1 < cols 
-                    and maze[x][y+1] != "#"
-                    and maze[x][y-1] != "#"
+                    and maze[x][y+1] != WALL
+                    and maze[x][y-1] != WALL
                     )
             else:
                 return (
                     0 <= x+1 < rows 
                     and 0 <= x-1 < rows 
-                    and maze[x+1][y] != "#"
-                    and maze[x-1][y] != "#"
+                    and maze[x+1][y] != WALL
+                    and maze[x-1][y] != WALL
                     )
             
-    def can_rotate(x,y):
+    def can_rotate(x, y):
         return (
-            1 <= x < rows-1 and 1 <= y < cols-1 
-            and maze[x][y] != "#" and maze[x+1][y] != "#" and maze[x-1][y] != "#" 
-            and maze[x][y+1] != "#" and maze[x][y-1] != "#" and maze[x+1][y+1] != "#" 
-            and maze[x-1][y-1] != "#" and maze[x+1][y-1] != "#" and maze[x-1][y+1] != "#"
-            )
+            1 <= x < rows - 1
+            and 1 <= y < cols - 1
+            and maze[x][y] != WALL
+            and maze[x + 1][y] != WALL
+            and maze[x - 1][y] != WALL
+            and maze[x][y + 1] != WALL
+            and maze[x][y - 1] != WALL
+            and maze[x + 1][y + 1] != WALL
+            and maze[x - 1][y - 1] != WALL
+            and maze[x + 1][y - 1] != WALL
+            and maze[x - 1][y + 1] != WALL
+        )
     
     def rotate_direction(direction):
 
@@ -105,23 +114,22 @@ def solve_maze(maze):
     
     def is_goal(curr_cell, goal1, goal2):
         return (
-                (curr_cell[0] == goal1[0]
-                and  curr_cell[1] == goal1[1]
-                and curr_cell[2] == goal1[2])
-                or 
-                (curr_cell[0] == goal2[0]
-                and  curr_cell[1] == goal2[1]
-                and curr_cell[2] == goal2[2])
-                )
+            curr_cell[0] == goal1[0]
+            and curr_cell[1] == goal1[1]
+            and curr_cell[2] == goal1[2]
+        ) or (
+            curr_cell[0] == goal2[0]
+            and curr_cell[1] == goal2[1]
+            and curr_cell[2] == goal2[2]
+        )
 
     def heuristic(node, goal1, goal2):
+        # Calculate the Manhattan distance between the node and each goal
         h_goal1 = abs(node[0] - goal1[0]) + abs(node[1] - goal1[1])
         h_goal2 = abs(node[0] - goal2[0]) + abs(node[1] - goal2[1])
 
-        if h_goal1 <= h_goal2:
-            return h_goal1
-        else:
-            return h_goal2
+        # Return the smaller heuristic value
+        return min(h_goal1, h_goal2)
 
     rows = len(maze)
     cols = len(maze[0])
@@ -188,15 +196,11 @@ def solve_maze(maze):
                     a_path[child_cell]=(curr_cell,has_rotated)
     
 
-    if goal1 in a_path :
-        cell_goal1 = goal1
-    else:
-        cell_goal1 = None
+    # Check if goal1 is in a_path
+    cell_goal1 = goal1 if goal1 in a_path else None
 
-    if goal2 in a_path:
-        cell_goal2 = goal2
-    else:
-        cell_goal2 = None
+    # Check if goal2 is in a_path
+    cell_goal2 = goal2 if goal2 in a_path else None
     
     if cell_goal1 == None and cell_goal2 == None:
         return -1
